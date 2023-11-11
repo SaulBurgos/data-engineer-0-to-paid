@@ -1,14 +1,10 @@
 import os
 from dotenv import load_dotenv
-import requests
-from dataclasses import dataclass
-from donnes_pipe.connector_interfaces import ConnectorELT, ConnectClient, ConnectorTransformer
 from donnes_pipe.clients.cat_client import CatAPIClient
 from donnes_pipe.clients.postgre_client import PostgreSqlClient
 from connectors.cat_connector import CatsConnector
 
 load_dotenv()
-
 
 if __name__ == "__main__":
     source_client = CatAPIClient(config={"api_key": os.environ["CAT_API_KEY"]})
