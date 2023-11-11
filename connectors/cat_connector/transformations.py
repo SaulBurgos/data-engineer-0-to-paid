@@ -2,40 +2,44 @@ from dataclasses import dataclass
 from donnes_pipe.connector_interfaces import ConnectorTransformer
 
 @dataclass
-class CatTranformType1(ConnectorTransformer):
-    description: str = "This will create a unique object with all breeds in one place"
-    verison: str = "1.0"
+class CatBasicInfoTransformation(ConnectorTransformer):
+    description: str = "Get a basic breed information"
+    version: str = "1.0"
 
-    def apply(self, data):
-        return data
+    def get_info(self, raw_data: list[dict]) -> list[dict]:
+        results = []
 
+        for item in raw_data:
+            results.append({
+                "id": item.get('id'),
+                "name": item.get('name'),
+                "temperament": item.get('temperament'),
+                "origin": item.get('origin'),
+                "description": item.get('description'),
+                "origin": item.get('origin'),
+                "wiki_url": item.get('wikipedia_url'),
+                "image": item.get('image')
+            })
 
-@dataclass
-class CatTranformType2(ConnectorTransformer):
-    description: str = "This will create a unique object with all breeds in one place"
-    verison: str = "1.0"
+        return results
+    
+    def mark_social_and_inteligent_cats(self, breeds_info: list[dict]) -> list[dict]:
 
-    def apply(self, data):
-        return data
+        for item in breeds_info:
+            temperament_list = [ s.strip().lower() for s in item.get('temperament').split(",")]
 
+            if "social" in temperament_list:
+                item.update({"is_social": True})
 
-@dataclass
-class CatTranformType3(ConnectorTransformer):
-    description: str = (
-        "this will join all the breeds in one place with a date of last year"
-    )
-    verison: str = "1.0"
-
-    def apply(self, data):
-        return data
+            if "intelligent" in temperament_list:
+                item.update({"is_intelligent": True})
+                
+        return breeds_info
 
 
 def get_cat_api_transformers(transformer_name) -> ConnectorTransformer:
     factory = {
-        "deafult": CatTranformType1,
-        "type1": CatTranformType1,
-        "type2": CatTranformType2,
-        "type3": CatTranformType3,
+        "basic_info": CatBasicInfoTransformation
     }
 
     if transformer_name not in factory:

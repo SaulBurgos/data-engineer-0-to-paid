@@ -18,11 +18,6 @@ class ConnectorTransformer(ABC):
     description: str = "Hepl text to description that you need to apply"
     verison: str = "1.0"
 
-     # non-abstract method
-    def apply(self, data):
-        pass
-
-
 @dataclass
 class ConnectorELT(ABC):
 

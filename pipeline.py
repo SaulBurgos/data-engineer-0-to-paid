@@ -15,5 +15,4 @@ if __name__ == "__main__":
     CatsConnector().run(
         source_client=source_client,
         destination_client=destination_client,
-        transformations=["type3", "type2", "type1"],
     )

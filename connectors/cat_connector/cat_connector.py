@@ -5,19 +5,28 @@ from .transformations import get_cat_api_transformers
 
 @dataclass
 class CatsConnector(ConnectorELT):
-    def extract_data(self, source_client: ConnectClient):
+    def extract_data(self, source_client: ConnectClient) -> dict:
+        results = {}
+
         with source_client.connect() as client:
-            print(client.api.get_breeds())
+            results.update({
+                "breeds": client.api.get_breeds(),
+            }) 
+
+            return results
 
     # Code to transform the data
-    def transform_data(self, raw_data, transformations: list[str]):
-        transformed_data = raw_data
+    def transform_data(self, raw_data):
+        current_transformation = get_cat_api_transformers('basic_info')
 
-        for transformer in transformations:
-            current_transformation = get_cat_api_transformers(transformer)
-            transformed_data = current_transformation.apply(transformed_data)
+        basic_breeds_info = current_transformation.get_info(raw_data.get('breeds'))
+        social_and_inteligent_cats = current_transformation.mark_social_and_inteligent_cats(basic_breeds_info)
+    
+        results = {
+            "breeds": social_and_inteligent_cats
+        }
 
-        return transformed_data
+        return results
 
     # Code to load the data into the destination database
     def load_data(self, data, destination_client: ConnectClient):
@@ -29,8 +38,7 @@ class CatsConnector(ConnectorELT):
         self,
         source_client: ConnectClient,
         destination_client: ConnectClient,
-        transformations: list[str],
     ):
         data = self.extract_data(source_client=source_client)
-        self.transform_data(data, transformations=transformations)
+        self.transform_data(data)
         self.load_data(data, destination_client=destination_client)

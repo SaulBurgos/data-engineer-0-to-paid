@@ -46,3 +46,8 @@ class CatAPIClient(ConnectClient):
             return make_request(
                 method="GET", url=self.url + "/favourites", headers=self.headers
             )
+        
+        def get_votes(self):
+            return make_request(
+                method="GET", url=self.url + "/votes", headers=self.headers
+            )
