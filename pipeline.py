@@ -5,7 +5,9 @@ import os
 from dotenv import load_dotenv
 import requests
 from dataclasses import dataclass, field
-from connector_interfaces import ConnectorELT, ConnectClient, ConnectorTransformer
+from donnes_stream.connector_interfaces import ConnectorELT, ConnectClient, ConnectorTransformer
+from donnes_stream.clients.cat_client import CatAPIClient
+from donnes_stream.clients.postgre_client import PostgreSqlClient
 from contextlib import contextmanager
 
 load_dotenv()
@@ -52,83 +54,6 @@ def get_catConnector_transformer(transformer_name) -> ConnectorTransformer:
         raise Exception(f"Unknown transformer: {transformer_name}")
 
     return factory[transformer_name]()
-
-
-def make_request(method: str, url: str, **kwargs) -> Any:
-    response = None
-    try:
-        response = requests.request(method, url, **kwargs)
-        return response.json()
-    except json.JSONDecodeError as e:
-        print(f"Error parsing response: {str(e)} || Server response: {response.text}")
-        return response
-    except Exception as e:
-        print(f"Error on request: {str(e)}")
-        return response
-
-
-@dataclass
-class CatAPIClient(ConnectClient):
-    name: str = "Cat API Client"
-    type: str = "api"
-    API_URL = "https://api.thecatapi.com/v1"
-    api: "CatAPIClient.Api" = None
-
-    def __post_init__(self):
-        self.headers = {"x-api-key": self.config["api_key"]}
-
-    @contextmanager
-    def connect(self):
-        try:
-            response = requests.get(self.API_URL + "/breeds/2", headers=self.headers)
-
-            if response.status_code != 200:
-                raise Exception(f"Connection failed to {self.name}")
-
-            self.api = self.Api(url=self.API_URL, headers=self.headers)
-            yield self
-        except Exception as e:
-            raise e
-
-    @dataclass
-    class Api:
-        url: str
-        headers: dict = field(default_factory=dict)
-
-        def get_breeds(self):
-            return make_request(
-                method="GET", url=self.url + "/breeds", headers=self.headers
-            )
-
-        def get_images(self):
-            return make_request(
-                method="GET", url=self.url + "/images/search", headers=self.headers
-            )
-
-        def get_favourites(self):
-            return make_request(
-                method="GET", url=self.url + "/favourites", headers=self.headers
-            )
-
-
-@dataclass
-class PostgreSqlClient(ConnectClient):
-    name: str = "PostgreSql Client"
-    type: str = "db"
-    DB_URL = "https://localhost:5432"
-
-    @contextmanager
-    def connect(self):
-        try:
-            ## here is the code to connect to the database if connection is successful, return db client
-            yield {
-                "create": "saving data",
-                "delete": "deleting data",
-                "edit": "editing data",
-            }
-        except Exception as e:
-            raise e
-
 
 @dataclass
 class CatsConnector(ConnectorELT):
