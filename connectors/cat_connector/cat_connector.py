@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from donnes_pipe.connector_interfaces import ConnectorELT, ConnectClient, ConnectorTransformer
+from donnes_pipe.connector_interfaces import ConnectorELT, ConnectClient
 from .transformations import get_cat_api_transformers
+
 
 @dataclass
 class CatsConnector(ConnectorELT):
@@ -23,6 +24,7 @@ class CatsConnector(ConnectorELT):
         with destination_client.connect() as client:
             print(client["create"])
 
+    # orchestrates the extract, transform, load process
     def run(
         self,
         source_client: ConnectClient,
