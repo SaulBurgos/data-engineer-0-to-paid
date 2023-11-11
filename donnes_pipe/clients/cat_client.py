@@ -1,8 +1,8 @@
 import requests
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from donnes_stream.connector_interfaces import ConnectorELT, ConnectClient, ConnectorTransformer
-from donnes_stream.utils.helpers import make_request
+from donnes_pipe.connector_interfaces import ConnectorELT, ConnectClient, ConnectorTransformer
+from donnes_pipe.utils.helpers import make_request
 
 @dataclass
 class CatAPIClient(ConnectClient):
