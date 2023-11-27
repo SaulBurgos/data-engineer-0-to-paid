@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
-from donnes_pipe.connector_interfaces import ConnectorELT, ConnectClient, ConnectorTransformer
+from dataclasses import dataclass
+from donnes_pipe.connector_interfaces import ConnectClient
 from contextlib import contextmanager
 import requests
 

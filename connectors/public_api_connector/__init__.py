@@ -1,2 +1,1 @@
-from .cat_connector import CatsConnector
 from .public_api_connector import PublicApisConnector
